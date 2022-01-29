@@ -14,14 +14,29 @@ class ViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let urlString = "https://www.hackingwithswift.com/samples/petitions-1.json"
+        
+        let urlString: String
+        
+        if navigationController?.tabBarItem.tag == 0 {
+             urlString = "https://www.hackingwithswift.com/samples/petitions-1.json"
+        } else {
+             urlString = "https://www.hackingwithswift.com/samples/petitions-2.json"
+        }
         if let url = URL(string: urlString) {
             if let data = try? Data(contentsOf: url){
                 parseJson(json: data)
+                return
             }
         }
+            showAlert()
+        
     }
     
+    func showAlert() {
+        let alertController = UIAlertController(title: "Something went wrong..", message: "Error navigating to URL. Please check internet connection and try again.", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Ok", style: .default))
+        present(alertController, animated: true)
+    }
     
     func parseJson(json: Data){
         let decoder = JSONDecoder()
