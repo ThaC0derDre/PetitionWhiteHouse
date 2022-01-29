@@ -15,8 +15,12 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let urlString: String
-        
+        createUrl()
+    }
+    
+    
+    func createUrl() {
+        var urlString: String
         if navigationController?.tabBarItem.tag == 0 {
              urlString = "https://www.hackingwithswift.com/samples/petitions-1.json"
         } else {
@@ -29,14 +33,15 @@ class ViewController: UITableViewController {
             }
         }
             showAlert()
-        
     }
+    
     
     func showAlert() {
         let alertController = UIAlertController(title: "Something went wrong..", message: "Error navigating to URL. Please check internet connection and try again.", preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "Ok", style: .default))
         present(alertController, animated: true)
     }
+    
     
     func parseJson(json: Data){
         let decoder = JSONDecoder()
@@ -59,6 +64,7 @@ class ViewController: UITableViewController {
         cell.detailTextLabel?.text  = petition.body
         return cell
     }
+    
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc  = DetailViewController()
