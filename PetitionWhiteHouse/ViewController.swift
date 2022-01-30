@@ -9,19 +9,36 @@ import UIKit
 
 class ViewController: UITableViewController {
     
+    let button      = UIBarButtonItem()
     var petitions   = [Petitions]()
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        createUrl()
+        creditButton()
+        loadVC()
     }
     
     
-    func createUrl() {
+    func creditButton(){
+        let button  = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(creditButtonTapped))
+        button.title    = "Credits"
+        navigationItem.rightBarButtonItem = button
+    }
+    
+    @objc func creditButtonTapped(){
+        let alertController = UIAlertController(title: "Credits", message: "All petitions are from the WhiteHouse website, under 'Petitions'", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Thanks!", style: .default))
+        present(alertController, animated: true)
+    }
+    
+    
+    func loadVC() {
         var urlString: String
+        title = tabBarItem.title
         if navigationController?.tabBarItem.tag == 0 {
+            
              urlString = "https://www.hackingwithswift.com/samples/petitions-1.json"
         } else {
              urlString = "https://www.hackingwithswift.com/samples/petitions-2.json"
