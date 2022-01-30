@@ -7,25 +7,57 @@
 
 import UIKit
 
+
+
 class ViewController: UITableViewController {
     
-    let button      = UIBarButtonItem()
-    var petitions   = [Petitions]()
+    enum Section { case main }
     
-
+    let button              = UIBarButtonItem()
+    var petitions           = [Petitions]()
+    var filteredPetitions   = [Petitions]()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         creditButton()
         loadVC()
+        configureSearchButton()
     }
     
     
-    func creditButton(){
-        let button  = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(creditButtonTapped))
-        button.title    = "Credits"
-        navigationItem.rightBarButtonItem = button
+    @objc func searchButtonTapped() {
+        let alert                   = UIAlertController(title: "Search for petition.", message: nil, preferredStyle: .alert)
+        var textField               = UITextField()
+        
+        alert.addAction(UIAlertAction(title: "Search", style: .default, handler: { action in
+            guard let filter        = textField.text else { return }
+            self.filteredPetitions  = self.petitions.filter({$0.title.lowercased().contains(filter.lowercased())})
+            self.tableView.reloadData()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            self.filteredPetitions   = self.petitions
+            self.tableView.reloadData()
+        }))
+        present(alert, animated: true)
+        alert.addTextField { userTextField in
+            userTextField.placeholder = "Enter petition here..."
+            textField = userTextField
+        }
     }
+    
+    
+    func configureSearchButton() {
+        let searchButton    = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchButtonTapped))
+        navigationItem.leftBarButtonItem = searchButton
+    }
+    
+    func creditButton() {
+        let creditButton  = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(creditButtonTapped))
+        navigationItem.rightBarButtonItem = creditButton
+    }
+    
     
     @objc func creditButtonTapped(){
         let alertController = UIAlertController(title: "Credits", message: "All petitions are from the WhiteHouse website, under 'Petitions'", preferredStyle: .alert)
@@ -64,29 +96,33 @@ class ViewController: UITableViewController {
         let decoder = JSONDecoder()
         
         if let jsonDecoded  = try? decoder.decode(MetaData.self, from: json){
-            petitions   = jsonDecoded.results
+            petitions           = jsonDecoded.results
+            filteredPetitions   = petitions
         }
     }
     
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return petitions.count
+        return filteredPetitions.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell    = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let petition                = petitions[indexPath.row]
+        let petition                = filteredPetitions[indexPath.row]
+       
         cell.textLabel?.text        = petition.title
         cell.detailTextLabel?.text  = petition.body
+        
         return cell
     }
     
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc  = DetailViewController()
-        vc.detailItem   = petitions[indexPath.row]
+        vc.detailItem   = filteredPetitions[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
     }
-}
 
+}
+ 

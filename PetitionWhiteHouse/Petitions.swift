@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct MetaData: Codable {
+struct MetaData: Codable, Hashable {
     var results = [Petitions]()
 }
 
-struct Petitions: Codable {
+struct Petitions: Codable, Hashable {
     var title: String
     var body: String
     var signatureCount: Int
